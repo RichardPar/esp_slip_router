@@ -1,4 +1,10 @@
 # esp_slip_router
+
+Changes : Using NodeMCU 0.9 
+Serial routed to ALT-FUNCTION UART on 13/14 (I think its those numbers)
+As there is no flow control, slattach -L is required. If you want to avoid this, then wire RTS/CTS lines
+
+
 A SLIP to WiFi router
 
 This is an implementation of a SLIP (Serial Line IP - RFC1055) router on the ESP8266. It can be used as simple (and slow) network interface to get WiFi connectivity. The ESP can act as STA or as AP. It transparently forwards any IP traffic through it. As it uses NAT no routing entries are required on the other side. 
@@ -58,7 +64,7 @@ You can also turn the sides and make the ESP to work as AP - useful e.g. if you 
 
 With a Linux-based host start the firmware on the esp, connect it via serial to USB, and use the following commands on the host:
 ```
-sudo slattach -p slip -s 115200 /dev/ttyUSB0&
+sudo slattach -L -p slip -s 115200 /dev/ttyUSB0&
 sudo ifconfig sl0 192.168.240.2 pointopoint 192.168.240.1 up mtu 1500
 sudo route add -net 192.168.4.0/24 gw 192.168.240.1
 ```
