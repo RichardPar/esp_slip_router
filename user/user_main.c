@@ -762,6 +762,7 @@ void ICACHE_FLASH_ATTR  user_init()
 ip_addr_t netmask;
 ip_addr_t gw;
 
+   system_uart_swap();
 // This interface number 2 is just to avoid any confusion with the WiFi-Interfaces (0 and 1)
 // Should be different in the name anyway - just to be sure
 // Matches the number in sio_open()
