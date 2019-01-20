@@ -42,6 +42,11 @@ uart_unload_fn uart0_unload_fn = NULL;
 #define DBG1 uart1_sendStr_no_wait
 #define DBG2 os_printf
 
+void settx();
+void setrx();
+
+
+
 
 LOCAL void uart0_rx_intr_handler(void *para);
 
@@ -56,9 +61,11 @@ LOCAL void uart0_rx_intr_handler(void *para);
 LOCAL void ICACHE_FLASH_ATTR
 uart_config(uint8 uart_no)
 {
+
     if (uart_no == UART1){
         PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_U1TXD_BK);
     }else{
+        
         /* rcv_buff size if 0x100 */
         ETS_UART_INTR_ATTACH(uart0_rx_intr_handler,  &(UartDev.rcv_buff));
         PIN_PULLUP_DIS(PERIPHS_IO_MUX_U0TXD_U);
@@ -158,7 +165,7 @@ uart0_write_char_no_wait(char c)
     
     }else{
         tx_buff_enq(&c,1);
-    }
+    }    
 }
 
 /******************************************************************************
@@ -212,7 +219,9 @@ uart0_rx_intr_handler(void *para)
     uint8 buf_idx = 0;
     uint8 temp,cnt;
     //RcvMsgBuff *pRxBuff = (RcvMsgBuff *)para;
-    
+
+
+    setrx();
     	/*ATTENTION:*/
 	/*IN NON-OS VERSION SDK, DO NOT USE "ICACHE_FLASH_ATTR" FUNCTIONS IN THE WHOLE HANDLER PROCESS*/
 	/*ALL THE FUNCTIONS CALLED IN INTERRUPT HANDLER MUST BE DECLARED IN RAM */
@@ -247,7 +256,6 @@ uart0_rx_intr_handler(void *para)
         WRITE_PERI_REG(UART_INT_CLR(uart_no), UART_RXFIFO_OVF_INT_CLR);
         DBG1("RX OVF!!\r\n");
     }
-
 }
 
 /******************************************************************************
