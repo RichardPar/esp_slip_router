@@ -24,8 +24,8 @@
 #define UART_TX_BUFFER_SIZE 4096 //Ring buffer length of tx buffer
 #define UART_RX_BUFFER_SIZE 0 //Ring buffer length of rx buffer
 
-#define UART_HW_RTS   0   //set 1: enable uart hw flow control RTS, PIN MTDO, FOR UART0
-#define UART_HW_CTS  0    //set1: enable uart hw flow contrl CTS , PIN MTCK, FOR UART0
+#define UART_HW_RTS   1   //set 1: enable uart hw flow control RTS, PIN MTDO, FOR UART0
+#define UART_HW_CTS  1    //set1: enable uart hw flow contrl CTS , PIN MTCK, FOR UART0
 
 #define UART0   0
 #define UART1   1
