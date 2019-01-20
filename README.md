@@ -1,5 +1,7 @@
 # esp_slip_router
 
+ADDED: Flow control and TX/RX LED's
+
 Changes : Using NodeMCU 0.9 
 Serial routed to ALT-FUNCTION UART on  GPIO13 and GPIO15 as RX and TX. The USB uart is diabled at this point.
 As there is no flow control, slattach -L is required. If you want to avoid this, then wire RTS/CTS lines
