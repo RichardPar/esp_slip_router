@@ -29,6 +29,13 @@ static char INVALID_LOCKED[] = "Invalid command. Config locked\r\n";
 static char INVALID_NUMARGS[] = "Invalid number of arguments\r\n";
 static char INVALID_ARG[] = "Invalid argument\r\n";
 
+static const int tx_ledpin = 5;
+static const int rx_ledpin = 4;
+static int   tx_ledcount;
+static int   rx_ledcount;
+static  os_timer_t some_timer;
+
+
 Softuart softuart;
 
 struct netif sl_netif;
@@ -44,6 +51,40 @@ bool connected;
 uint8_t remote_console_disconnect;
 
 uint32_t g_bit_rate;
+
+
+
+void settx()
+{
+   tx_ledcount=5;
+}
+
+void setrx()
+{
+   rx_ledcount=5;
+}
+
+void some_timerfunc(void *arg)
+{
+
+    if (tx_ledcount > 0)
+    {
+        gpio_output_set(0, (1 << tx_ledpin), 0, 0);
+        tx_ledcount--;
+    } else
+        gpio_output_set((1 << tx_ledpin), 0, 0, 0);
+        
+        
+    if (rx_ledcount > 0)
+    {
+        gpio_output_set(0, (1 << rx_ledpin), 0, 0);
+        rx_ledcount--;
+    } else
+        gpio_output_set((1 << rx_ledpin), 0, 0, 0);
+}
+
+
+
 
 // Similar to strtok
 int parse_str_into_tokens(char *str, char **tokens, int max_tokens)
@@ -752,6 +793,7 @@ void_write_char(char c) {}
 LOCAL void
 write_to_pbuf(char c)
 {
+    settx();
     slipif_received_byte(&sl_netif, c);
 }
 
@@ -762,7 +804,13 @@ void ICACHE_FLASH_ATTR  user_init()
 ip_addr_t netmask;
 ip_addr_t gw;
 
+   gpio_init();
    system_uart_swap();
+   
+    
+   //settx();
+   //setrx();
+  
 // This interface number 2 is just to avoid any confusion with the WiFi-Interfaces (0 and 1)
 // Should be different in the name anyway - just to be sure
 // Matches the number in sio_open()
@@ -861,6 +909,15 @@ char int_no = 2;
 
     // Put the connection in accept mode
     espconn_accept(pCon);
+
+    gpio_output_set(0, 0, (1 << rx_ledpin), 0);
+    gpio_output_set(0, 0, (1 << tx_ledpin), 0);
+    
+    
+    // setup timer (10ms, repeating)
+    os_timer_setfn(&some_timer, (os_timer_func_t *)some_timerfunc, NULL);
+    os_timer_arm(&some_timer, 10, 1);
+ 
 
     //Start our user task
     system_os_task(user_procTask, user_procTaskPrio,user_procTaskQueue, user_procTaskQueueLen);
